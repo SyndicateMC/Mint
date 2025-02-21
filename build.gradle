@@ -24,10 +24,9 @@ sourceSets {
     main {
         resources {
             srcDir 'src/generated/resources'
+            exclude '.cache/'
         }
     }
-
-    datagen
 }
 
 minecraft {
@@ -73,15 +72,7 @@ minecraft {
         }
 
         data {
-            ideaModule ideaModule.substring(0, ideaModule.lastIndexOf('.')) + '.datagen'
-
             args '--mod', mod_id, '--all', '--output', file('src/generated/resources/'), '--existing', file('src/main/resources/')
-
-            mods {
-                "${mod_id}" {
-                    source sourceSets.datagen
-                }
-            }
         }
     }
 }
@@ -92,14 +83,6 @@ mixin {
     config "${mod_id}.mixins.json"
 
     debug.export = true
-}
-
-configurations {
-    datagenCompileClasspath.extendsFrom compileClasspath
-    datagenRuntimeClasspath.extendsFrom runtimeClasspath
-
-    datagenRuntimeClasspath {
-    }
 }
 
 repositories {
@@ -120,8 +103,6 @@ repositories {
 
 dependencies {
     minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
-
-    datagenImplementation sourceSets.main.output
 
     implementation fg.deobf("com.tterrag.registrate:Registrate:MC1.20-1.3.11")
     jarJar(group: 'com.tterrag.registrate', name: 'Registrate', version: "[MC1.20,)")
