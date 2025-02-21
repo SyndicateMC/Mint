@@ -10,6 +10,8 @@ plugins {
 version = "${minecraft_version}-${mod_version}"
 group = mod_group_id
 
+jarJar.enable()
+
 base {
     archivesName = mod_id
 }
@@ -109,12 +111,20 @@ repositories {
             includeGroup 'net.minecraftforge'
         }
     }
+
+    maven { // Registrate
+        url "https://maven.tterrag.com/"
+    }
+    mavenLocal()
 }
 
 dependencies {
     minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
 
     datagenImplementation sourceSets.main.output
+
+    implementation fg.deobf("com.tterrag.registrate:Registrate:MC1.20-1.3.11")
+    jarJar(group: 'com.tterrag.registrate', name: 'Registrate', version: "[MC1.20,)")
 
     annotationProcessor "org.spongepowered:mixin:${mixin_version}:processor"
 }
@@ -133,6 +143,12 @@ tasks.withType(ProcessResources).configureEach {
         expand replaceProperties + [project: project]
     }
 }
+
+reobf {
+    jarJar { }
+}
+
+tasks.jarJar.finalizedBy('reobfJarJar')
 
 tasks.named('jar', Jar).configure {
     manifest {
